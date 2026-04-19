@@ -1,45 +1,97 @@
-# Contesto Progetto — [NOME PROGETTO]
+# Contesto Progetto — Pantry AI (dispensa_avanzata)
+
+> Riferimento esteso con visione, schemi dati completi, prompt AI e roadmap: vedi [Progetto.md](Progetto.md).
+> Questo file è il riassunto operativo per orientarsi rapidamente.
 
 ## Obiettivo
-[Descrizione in 2-3 frasi di cosa fa il progetto e quale problema risolve]
+
+App personale (web → PWA) per gestire la dispensa di casa:
+
+1. **Carico spesa** via foto multi-prodotto, riconosciute da Claude Vision
+2. **Lista spesa** generata automaticamente da beni di prima necessità ("staples") sotto soglia
+3. **Ricette anti-spreco** che danno priorità agli ingredienti in scadenza
+4. **Riconciliazione** periodica via foto come rete di sicurezza contro la negligenza
 
 ## Utenti target
-[Chi userà questa applicazione? Es: studenti, insegnanti, clienti di un e-commerce...]
 
-## Funzionalità principali
-- [Feature 1]
-- [Feature 2]
-- [Feature 3]
+- Utente principale: il proprietario della dispensa (single user MVP)
+- Utente secondario (Sprint 5+): partner con accesso condiviso
 
-## Priorità (MVP)
-[Quali funzionalità sono essenziali per la prima versione? Elencare in ordine di priorità.
-Tutto il resto è "nice to have" — Claude Code non deve proporlo spontaneamente.]
+## Funzionalità principali (MVP — Sprint 1-4)
+
+- Auth Google
+- Upload multi-foto + riconoscimento prodotti con Opus 4.7
+- Vista dispensa con filtri per categoria
+- CRUD staples
+- Generazione lista spesa "sotto soglia"
+- Decremento manuale items (recent use tray + bottone −1)
+- Dashboard scadenze
+- Generazione ricette con Sonnet 4.6
+- Riconciliazione foto (auto/verifica/unknown)
+- PWA con notifica serale interattiva
+
+## Priorità (MVP — Sprint 1)
+
+1. Auth Google + protezione route
+2. Schema Firestore + security rules per-utente
+3. Upload multi-foto + API `/api/recognize-load` (Opus 4.7)
+4. Review UI conferma items + merge su `pantry`
+5. Vista dispensa con filtro categoria
+
+Tutto il resto è "nice to have" — non proporre spontaneamente.
 
 ## Stile e design
-- **Tono**: [formale / informale / educativo / professionale]
-- **Stile visivo**: [minimal / colorato / moderno / classico]
-- **Colori principali**: [es. blu #3B82F6, bianco, grigio chiaro — oppure "da definire"]
-- **Riferimenti**: [siti o app con uno stile simile a quello desiderato, se presenti]
+
+- **Tono**: informale, diretto, italiano
+- **Stile visivo**: minimal, mobile-first (PWA), focus su un-tap-actions
+- **Colori principali**: da definire — partire con palette neutra Tailwind (zinc/emerald per accenti)
+- **Riferimenti**: pulizia tipo Linear / Things, niente fronzoli
 
 ## Decisioni architetturali
-[Scelte importanti già prese. Es: "Autenticazione solo con Google", "Dati tutti su Firestore, niente API esterne", ecc.]
+
+- **Frontend**: Next.js 15+ (App Router) + TypeScript + Tailwind 4
+- **Backend/DB**: Firebase (Firestore + Auth + Storage), tutto sotto `users/{uid}/`
+- **Auth**: solo Google login
+- **AI**:
+  - Opus 4.7 → riconoscimento foto (carico + riconciliazione)
+  - Sonnet 4.6 → ricette + meal planning
+  - Haiku 4.5 → voice parsing
+- **Image processing**: resize client-side (`browser-image-compression`) + server-side (`sharp`) prima di Claude
+- **API key Claude**: sempre server-side in env vars, mai esposta al client
+- **PWA**: manifest + service worker + web push (Sprint 4)
 
 ## Struttura dati (Firestore)
-[Collezioni principali e relazioni. Es:]
-- `users/` — profili utente
-- `projects/` — progetti creati dagli utenti
+
+Tutto isolato sotto `users/{uid}/`. Schemi dettagliati in [Progetto.md §5](Progetto.md).
+
+- `users/{uid}/pantry/{itemId}` — stato attuale dispensa
+- `users/{uid}/staples/{stapleId}` — beni "voglio sempre averli"
+- `users/{uid}/shoppingList/{itemId}` — lista spesa attiva
+- `users/{uid}/photoSessions/{sessionId}` — sessioni foto + output Claude
+- `users/{uid}/recipes/{recipeId}` — ricettario personale
+- `users/{uid}/activity/{eventId}` — log eventi (opzionale)
 
 ## Pagine/Route principali
-- `/` — Homepage
-- `/dashboard` — Dashboard utente
-- `/auth` — Login/Registrazione
+
+- `/` — Home (recent use tray, scadenze, scorciatoie)
+- `/login` — Login Google
+- `/dispensa` — Vista dispensa filtrabile
+- `/carico` — Upload foto + review riconoscimento
+- `/spesa` — Lista spesa
+- `/staples` — CRUD beni abituali
+- `/ricette` — Generazione + ricettario
+- `/riconcilia` — Riconciliazione foto
 
 ## Endpoint API
-[Elenco delle API routes man mano che vengono create. Es:]
-- `GET /api/users` — lista utenti
-- `POST /api/projects` — crea nuovo progetto
 
-[Aggiornare questa sezione ogni volta che si aggiunge un endpoint.]
+- `POST /api/recognize-load` — riconoscimento multi-foto post-spesa (Opus 4.7)
+- `POST /api/reconcile` — riconciliazione frigo/dispensa (Opus 4.7) — Sprint 4
+- `POST /api/generate-recipes` — proposte ricette (Sonnet 4.6) — Sprint 3
+- `POST /api/voice-consume` — voice scarico (Haiku 4.5) — Sprint 6+
 
 ## Note
-[Qualsiasi altra informazione utile per Claude Code]
+
+- I prompt AI sono asset versionati in `src/lib/prompts/*.ts` — modificare con cautela
+- Budget AI atteso: $1.40-$2.60/mese (vedi [Progetto.md §9](Progetto.md))
+- Filosofia "AI propone, utente conferma": mai scrivere su Firestore output AI con confidenza media/bassa senza review
+- Roadmap a 6 sprint dettagliata in [Progetto.md §11](Progetto.md)

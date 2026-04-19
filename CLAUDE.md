@@ -15,7 +15,7 @@
 
 ## Stack tecnologico
 
-- **Progetto**: [NOME PROGETTO]
+- **Progetto**: dispensa_avanzata
 - **Frontend**: Next.js (App Router) + TypeScript + Tailwind CSS
 - **Database**: Firebase Firestore
 - **Autenticazione**: Firebase Auth

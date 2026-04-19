@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+/*
+  Design tokens — Pantry AI
+  Palette "Forest": verde scuro primario, crema come background caldo,
+  arancio "ember" per stati di scadenza/urgenza.
+  Densità generosa, soft shadows, radii morbidi.
+*/
+
+@theme inline {
+  /* Font */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* Forest (verde primario) */
+  --color-forest-50: #f0f5f1;
+  --color-forest-100: #d8e6dc;
+  --color-forest-200: #b5cdbc;
+  --color-forest-300: #88af93;
+  --color-forest-400: #5e9070;
+  --color-forest-500: #3f7252;
+  --color-forest-600: #2f5a3f;
+  --color-forest-700: #264833;
+  --color-forest-800: #1f3d2b;
+  --color-forest-900: #142a1c;
+
+  /* Cream (background caldo) */
+  --color-cream-50: #fbf9f4;
+  --color-cream-100: #f5f1e8;
+  --color-cream-200: #ebe4d3;
+  --color-cream-300: #d8cfb5;
+
+  /* Ember (warning/urgenza/scadenze) */
+  --color-ember-50: #fff7ed;
+  --color-ember-100: #ffedd5;
+  --color-ember-200: #fed7aa;
+  --color-ember-500: #f97316;
+  --color-ember-600: #d97706;
+  --color-ember-700: #b45309;
+  --color-ember-800: #92400e;
+
+  /* Soft shadows */
+  --shadow-soft-sm: 0 1px 2px 0 rgb(20 42 28 / 0.04);
+  --shadow-soft: 0 1px 3px 0 rgb(20 42 28 / 0.06), 0 1px 2px -1px rgb(20 42 28 / 0.04);
+  --shadow-soft-md: 0 4px 6px -1px rgb(20 42 28 / 0.06), 0 2px 4px -2px rgb(20 42 28 / 0.05);
+  --shadow-soft-lg: 0 10px 15px -3px rgb(20 42 28 / 0.07), 0 4px 6px -4px rgb(20 42 28 / 0.05);
+}
+
+:root {
+  color-scheme: light;
+  --bg-app: var(--color-cream-50);
+  --fg-app: var(--color-forest-900);
+}
+
+html,
+body {
+  background: var(--bg-app);
+  color: var(--fg-app);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Scrollbar discreta su WebKit (la stretta area scroll orizzontale dei pill) */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+/* Safe area per bottom nav su iOS PWA */
+.pb-safe {
+  padding-bottom: max(env(safe-area-inset-bottom, 0), 0.5rem);
+}
+
+/* Animazioni custom */
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes float-soft {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgb(217 119 6 / 0.5); }
+  50% { box-shadow: 0 0 0 8px rgb(217 119 6 / 0); }
+}
+
+.animate-float-soft {
+  animation: float-soft 3s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
